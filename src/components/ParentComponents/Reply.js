@@ -1,54 +1,68 @@
 import React, {Component} from 'react';
+import axios from "axios";
 
 class Reply extends Component {
+    req = []
     constructor(props) {
         super(props);
         this.state = {
-            purpose: "party",
-            expectedOutTime: 9,
-            expectedInTime: 10,
-            status: "pending",
-            message : false
+            requests : []
         }
-
-
+        console.log(this.props)
+        this.reload = this.reload.bind(this)
+        this.sid = this.props.student_id
+        this.str = "http://localhost:8080/request/" + this.sid
+        console.log(this.str)
+        axios.get(`http://localhost:8080/request/${this.sid}`)
+            .then(response => {
+                // console.log(this.state)
+                this.setState({
+                    requests : response.data
+                })
+                this.req = this.state.requests
+                console.log(response.data)
+            })
+            .catch(error => {
+                console.log(error)
+            })
     }
 
-    eventHandler = event => {
-        event.preventDefault();
-        this.setState({
-
-            message:true
-        })
-        console.log(this.state)
-
+    reload = () => {
+        this.location.reload()
     }
-    replyYes = p =>{
-        p.preventDefault();
-        this.setState({status:"approved"})
-        console.log(this.state)
-    }
-    replyNo = p =>{
-        p.preventDefault();
-        this.setState({status:"declined"})
-        console.log(this.state)
-    }
-
-
 
     render() {
         return (
             <div>
-                <div><button type="submit" onClick={this.eventHandler}>New Request View</button></div>
-                {this.state.message && <h2>{this.state.purpose}</h2>}
-                {this.state.message && <h2>{this.state.expectedOutTime}</h2>}
-                {this.state.message && <h2>{this.state.expectedInTime}</h2>}
-
-                {this.state.message && <h2>{this.state.status}</h2>}
-                {this.state.message && <button type="submit" onClick={this.replyYes}>Approve</button> }
-                {this.state.message && <button type="submit" onClick={this.replyNo}>Decline</button>}
-
-            </div>)
+                {Array.from(this.state.requests).map(item => (
+                    <div key={item.request_id}>
+                        <h3>Purpose: {item.purpose}</h3>
+                        <h3>Expected Out Time: {item.expectedOutTime}</h3>
+                        <h3>Expected In Time: {item.expectedInTime}</h3>
+                        <button type="button" onClick={(e) => {
+                            axios.post(`http://localhost:8080/request/all/${item.request_id}`, "approved")
+                                .then(response => {
+                                    console.log(response)
+                                })
+                                .catch(error => {
+                                    console.log(error)
+                                });
+                            document.location.reload()
+                        }}>Approve</button>
+                        <button type="button" onClick={ (e) =>{
+                            axios.post(`http://localhost:8080/request/all/${item.request_id}`, "declined")
+                            .then(response => {
+                                console.log(response)
+                            })
+                            .catch(error => {
+                                console.log(error)
+                            });
+                            document.location.reload()
+                        }}>Decline</button>
+                    </div>
+                ))}
+            </div>
+        )
     }
 }
 export default Reply;

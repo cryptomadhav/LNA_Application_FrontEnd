@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component as Parent, Component} from 'react';
 import axios from 'axios';
 // import TimePicker from "react-time-picker";
 
@@ -12,7 +12,7 @@ class RequestForm extends Component {
             expectedInTime : null,
             status: "pending",
             // add props call here
-            student_id : "1"
+            student_id : "11"
         }
         this.submitHandler = this.submitHandler.bind(this)
         this.eventHandler = this.eventHandler.bind(this)
@@ -29,9 +29,9 @@ class RequestForm extends Component {
     };
     changeFormat = () => {
         this.setState({
-            expectedInTime : this.state.expectedInTime.toString().replace("T", " "),
-            expectedOutTime : this.state.expectedOutTime.toString().replace("T", " ")
-        }, () => {
+                expectedInTime : this.state.expectedInTime.toString().replace("T", " "),
+                expectedOutTime : this.state.expectedOutTime.toString().replace("T", " ")
+            }, () => {
                 console.log(this.state)
             }
         )
@@ -50,6 +50,7 @@ class RequestForm extends Component {
             .catch(error => {
                 // console.log(error)
             })
+        // Parent.forceUpdate();
     };
 
     render() {
